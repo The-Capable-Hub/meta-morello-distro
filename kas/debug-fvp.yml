@@ -17,4 +17,4 @@ local_conf_header:
 
         FVP_CONSOLES[default] = "terminal_uart_ap"
 target:
-  - core-image-minimal
+  - morello-image
