@@ -1,26 +1,26 @@
 header:
-  version: 11
+  version: 16
   includes:
     - repo: meta-morello
       file: kas/base.yml
 
 defaults:
   repos:
-    refspec: kirkstone
+    branch: kirkstone
 
 repos:
   meta-morello-distro:
 
   meta-morello:
-    url: "https://git.morello-project.org/morello/meta-morello.git"
-    refspec: "431908fa33773d2df2b0fafb72491793f3f33d41"
+    url: "https://github.com/The-Capable-Hub/meta-morello"
+    commit: "3c04a2e22a7c3074de56e213b5abd757958967eb"
     layers:
       meta-morello:
       meta-morello-toolchain:
 
   meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded"
-    refspec: "278ec081a64e6a7679d6def550101158126cd935"
+    commit:  "97d4be2839754dadfc326c21948472c2fc2985ce"
     layers:
       meta-oe:
       meta-python:
