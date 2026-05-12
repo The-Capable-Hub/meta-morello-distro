@@ -1,6 +1,6 @@
 inherit autotools purecap-sysroot
 
-MORELLO_SRC = "poky/meta/recipes-core/base-passwd/base-passwd_3.5.29.bb"
+MORELLO_SRC = "poky/meta/recipes-core/base-passwd/base-passwd_${PV}.bb"
 
 SUMMARY = "Base system master password/group files"
 DESCRIPTION = "The master copies of the user database files (/etc/passwd and /etc/group).  The update-passwd tool is also provided to keep the system databases synchronized with these master files."
@@ -13,47 +13,53 @@ TOOLCHAIN = "${MORELLO_TOOLCHAIN}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 BPNPASSWD = "base-passwd"
-PVPASSWD  = "3.5.29"
 
 RECIPE_NO_UPDATE_REASON = "Version 3.5.38 requires cdebconf for update-passwd utility"
 
-SRC_URI = "https://launchpad.net/debian/+archive/primary/+files/${BPNPASSWD}_${PVPASSWD}.tar.gz \
-           file://add_shutdown.patch \
-           file://nobash.patch \
-           file://noshadow.patch \
-           file://input.patch \
-           file://disable-docs.patch \
-           file://kvm.patch \
-           file://disable-shell.patch \
+SRC_URI = "https://launchpad.net/debian/+archive/primary/+files/${BPNPASSWD}_${PV}.tar.xz \
+           file://0001-Add-a-shutdown-group.patch;striplevel=1 \
+           file://0002-Use-bin-sh-instead-of-bin-bash-for-the-root-user.patch;striplevel=1 \
+           file://0003-Remove-for-root-since-we-do-not-have-an-etc-shadow.patch;striplevel=1 \
+           file://0004-Add-an-input-group-for-the-dev-input-devices.patch;striplevel=1 \
+           file://0005-Add-kvm-group.patch;striplevel=1 \
+           file://0007-Add-wheel-group.patch;striplevel=1 \
+           file://0001-base-passwd-Add-the-sgx-group.patch;striplevel=1 \
            "
 
-S="${WORKDIR}/${BPNPASSWD}-${PVPASSWD}"
+S="${WORKDIR}/work"
 
-SRC_URI[md5sum]    = "6beccac48083fe8ae5048acd062e5421"
-SRC_URI[sha256sum] = "f0b66388b2c8e49c15692439d2bee63bcdd4bbbf7a782c7f64accc55986b6a36"
+SRC_URI[md5sum]    = "82806f5c353e783b33f2082b4fd1a4ee"
+SRC_URI[sha256sum] = "83575327d8318a419caf2d543341215c046044073d1afec2acc0ac4d8095ff39"
 
 # the package is taken from launchpad; that source is static and goes stale
 # so we check the latest upstream from a directory that does get updated
 UPSTREAM_CHECK_URI = "${DEBIAN_MIRROR}/main/b/base-passwd/"
 
-do_install () {
-	install -d -m 755 ${D}${sbindir}
-	install -o root -g root -p -m 755 ${B}/update-passwd ${D}${sbindir}/
-	install -d -m 755 ${D}${mandir}/man8 ${D}${mandir}/pl/man8
-	install -p -m 644 ${S}/man/update-passwd.8 ${D}${mandir}/man8/
-	install -p -m 644 ${S}/man/update-passwd.pl.8 \
-		${D}${mandir}/pl/man8/update-passwd.8
-	gzip -9 ${D}${mandir}/man8/* ${D}${mandir}/pl/man8/*
-	install -d -m 755 ${D}${datadir}/base-passwd
-	install -o root -g root -p -m 644 ${S}/passwd.master ${D}${datadir}/base-passwd/
-	sed -i 's#:/root:#:${ROOT_HOME}:#' ${D}${datadir}/base-passwd/passwd.master
-	install -o root -g root -p -m 644 ${S}/group.master ${D}${datadir}/base-passwd/
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
-	install -d -m 755 ${D}${docdir}/${BPNPASSWD}
-	install -p -m 644 ${S}/debian/changelog ${D}${docdir}/${BPNPASSWD}/
-	gzip -9 ${D}${docdir}/${BPNPASSWD}/*
-	install -p -m 644 ${S}/README ${D}${docdir}/${BPNPASSWD}/
-	install -p -m 644 ${S}/debian/copyright ${D}${docdir}/${BPNPASSWD}/
+EXTRA_OECONF += " \
+    --disable-selinux --disable-debconf \
+    --disable-debconf --disable-docs \
+    "
+
+do_install () {
+    install -d -m 755 ${D}${sbindir}
+    install -o root -g root -p -m 755 ${B}/update-passwd ${D}${sbindir}/
+    install -d -m 755 ${D}${mandir}/man8 ${D}${mandir}/pl/man8
+    install -p -m 644 ${S}/man/update-passwd.8 ${D}${mandir}/man8/
+    install -p -m 644 ${S}/man/update-passwd.pl.8 \
+        ${D}${mandir}/pl/man8/update-passwd.8
+    gzip -9 ${D}${mandir}/man8/* ${D}${mandir}/pl/man8/*
+    install -d -m 755 ${D}${datadir}/base-passwd
+    install -o root -g root -p -m 644 ${S}/passwd.master ${D}${datadir}/base-passwd/
+    sed -i 's#:/root:#:${ROOT_HOME}:#' ${D}${datadir}/base-passwd/passwd.master
+    install -o root -g root -p -m 644 ${S}/group.master ${D}${datadir}/base-passwd/
+
+    install -d -m 755 ${D}${docdir}/${BPNPASSWD}
+    install -p -m 644 ${S}/debian/changelog ${D}${docdir}/${BPNPASSWD}/
+    gzip -9 ${D}${docdir}/${BPNPASSWD}/*
+    install -p -m 644 ${S}/README ${D}${docdir}/${BPNPASSWD}/
+    install -p -m 644 ${S}/debian/copyright ${D}${docdir}/${BPNPASSWD}/
 }
 
 basepasswd_sysroot_postinst() {
@@ -62,15 +68,15 @@ basepasswd_sysroot_postinst() {
 # Install passwd.master and group.master to sysconfdir
 install -d -m 755 ${STAGING_DIR_TARGET}${sysconfdir}
 for i in passwd group; do
-	install -p -m 644 ${STAGING_DIR_TARGET}${datadir}/base-passwd/\$i.master \
-		${STAGING_DIR_TARGET}${sysconfdir}/\$i
+    install -p -m 644 ${STAGING_DIR_TARGET}${datadir}/base-passwd/\$i.master \
+        ${STAGING_DIR_TARGET}${sysconfdir}/\$i
 done
 
 # Run any useradd postinsts
 for script in ${STAGING_DIR_TARGET}${bindir}/postinst-useradd-*; do
-	if [ -f \$script ]; then
-		\$script
-	fi
+    if [ -f \$script ]; then
+        \$script
+    fi
 done
 }
 
@@ -78,10 +84,10 @@ SYSROOT_DIRS             += "${sysconfdir}"
 SYSROOT_PREPROCESS_FUNCS += "base_passwd_tweaksysroot"
 
 base_passwd_tweaksysroot () {
-	mkdir -p ${SYSROOT_DESTDIR}${bindir}
-	dest=${SYSROOT_DESTDIR}${bindir}/postinst-${PN}
-	echo "${basepasswd_sysroot_postinst}" > $dest
-	chmod 0755 $dest
+    mkdir -p ${SYSROOT_DESTDIR}${bindir}
+    dest=${SYSROOT_DESTDIR}${bindir}/postinst-${PN}
+    echo "${basepasswd_sysroot_postinst}" > $dest
+    chmod 0755 $dest
 }
 
 python populate_packages:prepend() {
@@ -122,7 +128,7 @@ FILES:${PN}-update = "${sbindir}/* ${datadir}/${BPNPASSWD}"
 pkg_postinst:${PN}-update () {
 #!/bin/sh
 if [ -n "$D" ]; then
-	exit 0
+    exit 0
 fi
 ${sbindir}/update-passwd
 }
