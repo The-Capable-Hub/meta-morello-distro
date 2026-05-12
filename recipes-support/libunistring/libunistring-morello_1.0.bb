@@ -31,6 +31,8 @@ S = "${WORKDIR}/libunistring-${PV}"
 SRC_URI = "${GNU_MIRROR}/libunistring/libunistring-${PV}.tar.gz"
 SRC_URI[sha256sum] = "3c0184c0e492d7c208ce31d25dd1d2c58f0c3ed6cbbe032c5b248cddad318544"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 do_install:append() {
   ${READELF_COMMAND}  ${D}${libdir}/libunistring.so >  ${D}${PURECAP_DEBUGDIR}/libunistring.so.readelf
 }
