@@ -84,6 +84,8 @@ PACKAGES_DYNAMIC += "^${PN}-plperl \
     ^${PN}-plpython \
 "
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 python populate_packages:prepend() {
 
     def fill_more(name):
