@@ -58,6 +58,8 @@ VER = "${PVTCL}"
 AUTOTOOLS_SCRIPT_PATH = "${S}/unix"
 EXTRA_OECONF = "--enable-threads --enable-man-suffix"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 do_install() {
 	autotools_do_install
 	oe_runmake 'DESTDIR=${D}' install-private-headers
