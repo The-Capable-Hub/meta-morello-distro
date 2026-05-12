@@ -104,6 +104,8 @@ HAS_PERL = "0"
 
 PTEST_BUILD_HOST_FILES += "net-snmp-config gen-variables"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 do_configure:prepend() {
     sed -i -e "s|I/usr/include|I${STAGING_DIR_TARGET}${includedir}|g" \
         "${S}"/configure \
