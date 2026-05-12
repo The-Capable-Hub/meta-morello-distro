@@ -11,11 +11,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d834ea7d480438ada04e5d846152395 \
                     file://COPYING.LESSERv3;md5=e6a600fd5e1d9cbde2d983680233ad02 \
                     file://COPYINGv2;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
                     file://COPYING.unicode;md5=684cf5f7e3fded3546679424528261a9 \
-                    file://src/idn2.c;endline=16;md5=e4b6d628a84a55f1fd8ae4c76c5f6509 \
-                    file://lib/idn2.h.in;endline=27;md5=d0fc8ec628be130a1d5b889107e92477"
+                    file://src/idn2.c;endline=16;md5=afc1531bda991ba6338e33a7eff758a0 \
+                    file://lib/idn2.h.in;endline=27;md5=f88d218005a5c45b68a83cecb5bd7f26"
 
 SRC_URI = "${GNU_MIRROR}/libidn/libidn2-${PV}.tar.gz"
-SRC_URI[sha256sum] = "76940cd4e778e8093579a9d195b25fff5e936e9dc6242068528b437a76764f91"
+SRC_URI[sha256sum] = "4c21a791b610b9519b9d0e12b8097bf2f359b12f8dd92647611a929e6bfd7d64"
 
 TOOLCHAIN  = "${MORELLO_TOOLCHAIN}"
 
@@ -23,6 +23,7 @@ S = "${WORKDIR}/libidn2-${PV}"
 
 DEPENDS = "virtual/libiconv libunistring-morello"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 EXTRA_OECONF += "--disable-rpath \
                  --with-libunistring-prefix=${STAGING_EXECPREFIXDIR} \
