@@ -9,9 +9,9 @@ HOMEPAGE = "http://www.OpenLDAP.org/license.html"
 # The OpenLDAP Public License - see the HOMEPAGE - defines
 # the license.  www.openldap.org claims this is Open Source
 # (see http://www.openldap.org), the license appears to be
-# basically BSD.  opensource.org does not record this license
-# at present (so it is apparently not OSI certified).
-LICENSE = "OpenLDAP"
+# basically BSD.  opensource.org has listed this license
+# since August 2019.
+LICENSE = "OLDAP-2.8"
 LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=beceb5ac7100b6430640c61655b25c1f \
                     file://LICENSE;md5=153d07ef052c4a37a8fac23bc6031972 \
                     "
@@ -24,7 +24,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/cheri-patches:"
 
 LDAP_VER = "${@'.'.join(d.getVar('PV').split('.')[0:2])}"
 
-SRC_URI = "http://www.openldap.org/software/download/OpenLDAP/openldap-release/${BPN_LDAP}-${PV}.tgz \
+SRC_URI = " \
+    http://www.openldap.org/software/download/OpenLDAP/openldap-release/${BPN_LDAP}-${PV}.tgz \
     file://use-urandom.patch \
     file://initscript \
     file://slapd.service \
@@ -79,7 +80,6 @@ PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6"
 #
 # UNIX crypt(3) passwd support:
 EXTRA_OECONF += "--enable-crypt"
-
 
 # SLAPD BACKEND
 #
@@ -154,6 +154,8 @@ PACKAGES += "${PN}-overlay-proxycache"
 CPPFLAGS:append = " -D_GNU_SOURCE -DURANDOM_DEVICE='/dev/urandom' -fPIC"
 
 LDFLAGS:append = " -pthread"
+
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 do_configure() {
 
