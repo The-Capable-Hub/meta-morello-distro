@@ -1,18 +1,19 @@
 require recipes-core/util-linux/util-linux.inc
 
-inherit autotools gettext pkgconfig pure-cap-kheaders purecap-sysroot
+inherit autotools gettext pkgconfig pure-cap-kheaders purecap-sysroot gtk-doc
 
-MORELLO_SRC = "poky/meta/recipes-core/util-linux/util-linux_2.37.4.bb"
+PV = "2.39.3"
+MORELLO_SRC = "poky/meta/recipes-core/util-linux/util-linux_${PV}.bb"
 
 SUMMARY = "A suite of basic system administration utilities"
 
 TOOLCHAIN = "${MORELLO_TOOLCHAIN}"
 
-PV = "2.37.4"
-
 S = "${WORKDIR}/util-linux-${PV}"
 EXTRA_OECONF += "--disable-all-programs --enable-libuuid --enable-libblkid --enable-libmount"
 LICENSE = "BSD-3-Clause"
+
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 do_install() {
 	install_dir="${D}"
