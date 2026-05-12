@@ -12,47 +12,45 @@ HOMEPAGE = "https://curl.se/"
 BUGTRACKER = "https://github.com/curl/curl/issues"
 SECTION = "console/network"
 LICENSE = "curl"
-LIC_FILES_CHKSUM = "file://COPYING;md5=190c514872597083303371684954f238"
+LIC_FILES_CHKSUM = "file://COPYING;md5=eed2e5088e1ac619c9a1c747da291d75"
 
 TOOLCHAIN  = "${MORELLO_TOOLCHAIN}"
 
-SRC_URI = "https://curl.se/download/curl-${PV}.tar.xz \
-           file://CVE-2022-22576.patch \
-           file://CVE-2022-27775.patch \
-           file://CVE-2022-27776.patch \
-           file://CVE-2022-27774-1.patch \
-           file://CVE-2022-27774-2.patch \
-           file://CVE-2022-27774-3.patch \
-           file://CVE-2022-27774-4.patch \
-           file://CVE-2022-30115.patch \
-           file://CVE-2022-27780.patch \
-           file://CVE-2022-27781.patch \
-           file://CVE-2022-27779.patch \
-           file://CVE-2022-27782-1.patch \
-           file://CVE-2022-27782-2.patch \
-           file://0001-openssl-fix-CN-check-error-code.patch \
-           file://CVE-2022-32205.patch \
-           file://CVE-2022-32206.patch \
-           file://CVE-2022-32207.patch \
-           file://CVE-2022-32208.patch \
-           file://CVE-2022-35252.patch \
-           file://CVE-2022-32221.patch \
-           file://CVE-2022-42916.patch \
-           file://CVE-2022-42915.patch \
-           file://CVE-2022-43551.patch \
-           file://CVE-2022-43552.patch \
-           file://CVE-2023-23914_5-1.patch \
-           file://CVE-2023-23914_5-2.patch \
-           file://CVE-2023-23914_5-3.patch \
-           file://CVE-2023-23914_5-4.patch \
-           file://CVE-2023-23914_5-5.patch \
-           "
-SRC_URI[sha256sum] = "0aaa12d7bd04b0966254f2703ce80dd5c38dbbd76af0297d3d690cdce58a583c"
+SRC_URI = " \
+    https://curl.se/download/curl-${PV}.tar.xz \
+    file://721941aadf4adf4f6aeb3f4c0ab489bb89610c36.patch \
+    file://run-ptest \
+    file://disable-tests \
+    file://no-test-timeout.patch \
+    file://CVE-2024-6197.patch \
+    file://CVE-2024-7264-1.patch \
+    file://CVE-2024-7264-2.patch \
+    file://CVE-2024-8096.patch \
+    file://CVE-2024-9681.patch \
+    file://CVE-2024-11053-0001.patch \
+    file://CVE-2024-11053-0002.patch \
+    file://CVE-2024-11053-0003.patch \
+    file://CVE-2025-0167.patch \
+    file://CVE-2025-9086.patch \
+    file://CVE-2025-10148.patch \
+    file://CVE-2025-14017.patch \
+    file://CVE-2025-14524.patch \
+    file://0001-build-enable-Wcast-qual-fix-or-silence-compiler-warn.patch \
+    file://CVE-2025-14819.patch \
+    file://CVE-2025-15079.patch \
+    file://CVE-2025-15224.patch \
+"
+SRC_URI[sha256sum] = "6fea2aac6a4610fbd0400afb0bcddbe7258a64c63f1f68e5855ebc0c659710cd"
 
 S = "${WORKDIR}/curl-${PV}"
 
 # Curl has used many names over the years...
 CVE_PRODUCT = "haxx:curl haxx:libcurl curl:curl curl:libcurl libcurl:libcurl daniel_stenberg:curl"
+
+CVE_STATUS[CVE-2024-32928] = "ignored: CURLOPT_SSL_VERIFYPEER was disabled on google cloud services causing a potential man in the middle attack"
+CVE_STATUS[CVE-2025-0725] = "not-applicable-config: gzip decompression of content-encoded HTTP responses with the `CURLOPT_ACCEPT_ENCODING` option, using zlib 1.2.0.3 or older"
+CVE_STATUS[CVE-2025-5025] = "${@bb.utils.contains('PACKAGECONFIG', 'openssl', 'not-applicable-config: applicable only with wolfssl','unpatched',d)}"
+CVE_STATUS[CVE-2025-10966] = "${@bb.utils.contains('PACKAGECONFIG', 'openssl', 'not-applicable-config: applicable only with wolfssl','unpatched',d)}"
 
 # Entropy source for random PACKAGECONFIG option
 RANDOM ?= "/dev/urandom"
@@ -84,13 +82,14 @@ EXTRA_OECONF = " \
     --enable-threaded-resolver \
     --disable-libcurl-option \
     --disable-ntlm-wb \
-    --enable-crypto-auth \
     --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
     --without-libpsl \
     --enable-debug \
     --enable-optimize \
     --disable-curldebug \
 "
+
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 do_install:append:class-target() {
   # cleanup buildpaths from curl-config
