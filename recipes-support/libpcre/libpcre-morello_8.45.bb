@@ -32,6 +32,8 @@ CVE_PRODUCT = "pcre"
 
 S = "${WORKDIR}/pcre-${PV}"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 PROVIDES += "pcre-morello"
 DEPENDS  += "bzip2-morello zlib-morello"
 
