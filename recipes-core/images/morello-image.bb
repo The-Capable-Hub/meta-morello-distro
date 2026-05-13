@@ -73,6 +73,13 @@ IMAGE_INSTALL:append = " \
                        "
 
 IMAGE_INSTALL:append =  " \
-                        llvm-morello-librt \
                         postgresql-morello-src \
                         "
+
+IMAGE_INSTALL:append = " \
+                        llvm-morello-librt \
+                        snmalloc \
+                        llvm-morello \
+                        cmake \
+                        ninja \
+"
