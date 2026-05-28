@@ -1,0 +1,35 @@
+From f69c05b1c65ac53d6efa224d2268a0a5db91ee09 Mon Sep 17 00:00:00 2001
+From: Harrison Carter <harrison.carter@thecapablehub.org>
+Date: Wed, 27 May 2026 07:55:24 +0100
+Subject: [PATCH 7/7] tests: cheri.cc: remove outdated flags
+
+David Chisnall provided some feedback on an accidental PR here:
+https://github.com/microsoft/snmalloc/pull/850#discussion_r3287667414
+
+Signed-off-by: Harrison Carter <harrison.carter@thecapablehub.org>
+---
+ src/snmalloc/pal/pal_linux.h | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/src/snmalloc/pal/pal_linux.h b/src/snmalloc/pal/pal_linux.h
+index 500e53c..4fc4327 100644
+--- a/src/snmalloc/pal/pal_linux.h
++++ b/src/snmalloc/pal/pal_linux.h
+@@ -182,12 +182,9 @@ namespace snmalloc
+     static SNMALLOC_FAST_PATH CapPtr<T, capptr::user_address_control_type<B>>
+     capptr_to_user_address_control(CapPtr<T, B> p)
+     {
+-      if constexpr (Aal::aal_cheri_features & Aal::AndPermsTrapsUntagged)
++      if (p == nullptr)
+       {
+-        if (p == nullptr)
+-        {
+-          return nullptr;
+-        }
++        return nullptr;
+       }
+       return CapPtr<T, capptr::user_address_control_type<B>>::unsafe_from(
+         __builtin_cheri_perms_and(
+-- 
+2.43.0
+

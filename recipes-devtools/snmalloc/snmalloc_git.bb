@@ -9,12 +9,13 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b98fddd052bb2f5ddbcdbd417ffb26a8"
 
 TOOLCHAIN = "${MORELLO_TOOLCHAIN}"
 
-PROVIDES += " ${PN}-shim ${PN}-test ${PN}-minimal ${PN}-dev"
+PACKAGES += "${PN}-shim ${PN}-test ${PN}-minimal"
 
-DEPENDS += "virtual/llvm-morello-librt "
+DEPENDS += "virtual/llvm-morello-librt"
 
-RDEPENDS:${PN} = "${PN}-dev"
-RDEPENDS:${PN}-test = "${PN}"
+RDPENDS:${PN} = " llvm-morello-librt "
+RDEPENDS:${PN}-dev = "${PN} llvm-morello "
+RDEPENDS:${PN}-test = "${PN} ${PN}-minimal ${PN}-shim "
 
 SRC_URI = " \
     git://github.com/microsoft/snmalloc.git;protocol=https;branch=main \
@@ -24,6 +25,8 @@ SRC_URI = " \
     file://0004-test-cheri-amend-header-inclusion.patch \
     file://0005-test-cheri-fix-alloc-config.patch \
     file://0006-threadalloc-redef-atext-impl.patch \
+    file://0007-tests-cheri.cc-remove-outdated-flags.patch \
+    file://run-tests.sh \
     "
 SRCREV = "cd2b19b9f1c8db1df7d97a97ed6660cc16abd6de"
 SRC_URI[sha256sum] = "5e9db0d6a250c4c3e7a5b1d61bf6966fa67a1ad5d4aa050e779d0aa594055116"
@@ -32,7 +35,7 @@ S = "${WORKDIR}/git"
 
 DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
-CXX_INC_FLAGS = "\
+CXX_INC_FLAGS = " \
     -I${S}/src/snmalloc/pal/ \
     -isystem ${STAGING_DIR_TARGET}${includedir}/c++/v1 \
     -isystem ${STAGING_DIR_TARGET}${includedir} \
@@ -63,21 +66,21 @@ EXTRA_OECMAKE += " \
     -DCMAKE_ASM_FLAGS='${CC_PURECAP_FLAGS}' \
     -DCMAKE_INSTALL_RPATH='$ORIGIN/../lib:${PURECAP_LIBDIR}' \
     -DCMAKE_SYSROOT='${STAGING_DIR_TARGET}${PURECAP_SYSROOT_DIR}' \
-    -DCMAKE_ASM_COMPILER_TARGET="${GLOBAL_LIB_TRIPLE}" \
-    -DCMAKE_C_COMPILER_TARGET="${GLOBAL_LIB_TRIPLE}" \
-    -DCMAKE_CXX_COMPILER_TARGET="${GLOBAL_LIB_TRIPLE}" \
     -DCMAKE_C_FLAGS="${LLVM_C_FLAGS}" \
     -DCMAKE_CXX_FLAGS="${LLVM_CXX_FLAGS}" \
     -DCMAKE_EXE_LINKER_FLAGS="${LLVM_LD_FLAGS} ${LD_PURECAP_FLAGS}" \
     -DCMAKE_SHARED_LINKER_FLAGS="${LLVM_LD_FLAGS} ${LD_PURECAP_FLAGS}" \
     "
 
-FILES:${PN} = "\
-    ${libdir}/libsnmallocshim-checks-memcpy-only.so \
-    ${libdir}/libsnmallocshim-checks.so \
-    ${libdir}/libsnmalloc-minimal.so \
-    ${libdir}/libsnmallocshim.so \
-    "
+do_install:append () {
+    TEST_BIN_PATH=${bindir}/snmalloc/
+    
+    install -d  ${D}${TEST_BIN_PATH}
+    cp ${B}/perf-* ${B}/func-* ${D}${TEST_BIN_PATH}
+
+    install -m 744 ${WORKDIR}/run-tests.sh ${D}${bindir}
+    sed -i "s|@TEST_BIN_PATH@|${TEST_BIN_PATH}|g" ${D}${bindir}/run-tests.sh
+}
 
 FILES:${PN}-dev = "\
     ${includedir}/snmalloc/ \
@@ -94,10 +97,9 @@ FILES:${PN}-minimal = "\
     ${libdir}/libsnmalloc-minimal.so \
     "
 
-FILES:${PN}-test = "\
-    ${bindir}/func-* \
-    ${bindir}/perf-* \
+FILES:${PN}-test = " \
+    ${bindir}/snmalloc/func-* \
+    ${bindir}/snmalloc/perf-* \
     ${libdir}/libsnmallocshim-checks-memcpy-only.so \
     ${libdir}/libsnmallocshim-checks.so \
     "
-
