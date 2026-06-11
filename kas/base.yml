@@ -13,7 +13,7 @@ repos:
 
   meta-morello:
     url: "https://github.com/The-Capable-Hub/meta-morello"
-    commit: "3c04a2e22a7c3074de56e213b5abd757958967eb"
+    commit: "2f645ab0cdb27666390720451ad9db367a56a6ae"
     layers:
       meta-morello:
       meta-morello-toolchain:
