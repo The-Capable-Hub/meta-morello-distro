@@ -47,6 +47,8 @@ PACKAGESPLITFUNCS:prepend = "split_libevent_libs "
 
 PTEST_PATH = "${libdir}/libevent/ptest"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 do_install:append() {
 	rm ${D}${bindir}/event_rpcgen.py
 	rmdir ${D}${bindir}

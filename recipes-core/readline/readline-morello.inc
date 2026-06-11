@@ -1,7 +1,7 @@
 inherit update-alternatives purecap-sysroot
 inherit autotools texinfo
 
-MORELLO_SRC = "poky/meta/recipes-core/readline/readlinge_8.1.2.bb"
+MORELLO_SRC = "poky/meta/recipes-core/readline/readline_8.2.bb"
 
 SUMMARY     = "Library for editing typed command lines"
 DESCRIPTION = "The GNU Readline library provides a set of functions for use by applications that allow users to edit \
@@ -28,13 +28,14 @@ S = "${WORKDIR}/${BPN_READLINE}-${PV_READLINE}"
 B = "${WORKDIR}/build"
 
 BPN_READLINE = "readline"
-PV_READLINE  = "8.1.2"
-
+PV_READLINE  = "8.2"
 
 EXTRA_AUTORECONF += "--exclude=autoheader"
-EXTRA_OECONF     += "bash_cv_termcap_lib=ncurses"
+EXTRA_OECONF     += "bash_cv_termcap_lib=ncurses --with-shared-termcap-library"
 
 LEAD_SONAME = "libreadline.so"
+
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 do_configure:prepend () {
   if [ ! -e ${S}/acinclude.m4 ]; then

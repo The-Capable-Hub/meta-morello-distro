@@ -46,6 +46,8 @@ EXTRA_OECONF = "\
 CFLAGS += "-D_REENTRANT"
 CXXFLAGS:append:powerpc = " -lstdc++"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 do_install:append() {
     libtool --finish "${D}${libdir}"
 }

@@ -71,3 +71,8 @@ IMAGE_INSTALL:append = " \
                         base-passwd-morello \
                         util-linux-morello \
                        "
+
+IMAGE_INSTALL:append =  " \
+                        llvm-morello-librt \
+                        postgresql-morello-src \
+                        "

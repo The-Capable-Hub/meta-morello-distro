@@ -6,21 +6,21 @@ header:
 
 defaults:
   repos:
-    branch: kirkstone
+    branch: scarthgap
 
 repos:
   meta-morello-distro:
 
   meta-morello:
     url: "https://github.com/The-Capable-Hub/meta-morello"
-    commit: "3c04a2e22a7c3074de56e213b5abd757958967eb"
+    commit: "c3a70955600e11c55c4e5a180e1e0765677faada"
     layers:
       meta-morello:
       meta-morello-toolchain:
 
   meta-openembedded:
     url: "https://github.com/openembedded/meta-openembedded"
-    commit:  "97d4be2839754dadfc326c21948472c2fc2985ce"
+    commit:  "5124ac4a658899158f4a7a2ddf1d2ca931ec7d0e"
     layers:
       meta-oe:
       meta-python:

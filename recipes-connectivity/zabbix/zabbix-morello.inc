@@ -32,7 +32,7 @@ TOOLCHAIN                = "${MORELLO_TOOLCHAIN}"
 PV   = "5.0.46"
 PNPV = "zabbix-${PV}"
 SRC_URI = " \
-    https://cdn.zabbix.com/zabbix/sources/stable/5.0/${PNPV}.tar.gz \
+    https://cdn.zabbix.com/zabbix/sources/oldstable/5.0/${PNPV}.tar.gz \
     "
 
 SRC_URI += "file://0001-net-fix-provenance-error.patch \
@@ -91,6 +91,8 @@ CC:remove:toolchain-llvm-morello:class-target = "-Werror=format"
 KERNEL_VERSION = "6.5"
 
 ZABBIX_IP_ADDR = "127.0.0.1"
+
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 do_configure:prepend() {
     export KERNEL_VERSION="${KERNEL_VERSION}"

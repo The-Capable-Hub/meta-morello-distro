@@ -48,6 +48,7 @@ UPSTREAM_CHECK_URI = "https://www.sourceware.org/pub/bzip2/"
 PACKAGES =+ "libbz2-morello"
 
 CFLAGS:append = " -fPIC -fpic -Winline -fno-strength-reduce -D_FILE_OFFSET_BITS=64"
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
 
 ALTERNATIVE_PRIORITY = "100"
 

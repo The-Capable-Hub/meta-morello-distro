@@ -44,6 +44,8 @@ EXTRA_OECONF:append = " shared"
 
 EXTRA_OECONF:remove:toolchain-llvm-morello = "--disable-static"
 
+DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
 # This allows disabling deprecated or undesirable crypto algorithms.
 # The default is to trust upstream choices.
 DEPRECATED_CRYPTO_FLAGS ?= ""
