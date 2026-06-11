@@ -1,0 +1,9 @@
+# short-description: Create an EFI disk image
+# long-description: Creates a partitioned EFI disk image that the user
+# can directly dd to boot media. Uses a custom grub.cfg file to configure the boot.
+
+part /boot --source bootimg-efi --sourceparams="loader=grub-efi,initrd=initramfs-${MACHINE}.cpio.gz,file=initramfs-${MACHINE}.cpio.gz" --ondisk sda --label msdos --active --align 1024 --fsoptions="defaults,nofail"
+
+part / --source rootfs --ondisk sda --fstype=ext4 --label root --align 1024 --uuid=70ead9cb-4d31-4ffa-8127-7cc8c720eaa8 --fsoptions="defaults,nofail"
+
+bootloader --ptable gpt  --configfile="${MACHINE}-grub.cfg"
