@@ -9,13 +9,16 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b98fddd052bb2f5ddbcdbd417ffb26a8"
 
 TOOLCHAIN = "${MORELLO_TOOLCHAIN}"
 
-PACKAGES += "${PN}-shim ${PN}-test ${PN}-minimal"
+PACKAGES += " ${PN}-shim ${PN}-test ${PN}-minimal "
+PROVIDES += " ${PN}-minimal ${PN}-test ${PN}-shim "
 
 DEPENDS += "virtual/llvm-morello-librt"
 
-RDPENDS:${PN} = " llvm-morello-librt "
-RDEPENDS:${PN}-dev = "${PN} llvm-morello "
-RDEPENDS:${PN}-test = "${PN} ${PN}-minimal ${PN}-shim "
+RDEPENDS:${PN} += " llvm-morello-librt-dev "
+RDEPENDS:${PN}-minimal += " ${PN} "
+RDEPENDS:${PN}-shim += " ${PN} "
+RDEPENDS:${PN}-dev += " ${PN} llvm-morello "
+RDEPENDS:${PN}-test += " ${PN}-dev ${PN}-minimal ${PN}-shim ${PN}-dbg "
 
 SRC_URI = " \
     git://github.com/microsoft/snmalloc.git;protocol=https;branch=main \
@@ -26,6 +29,7 @@ SRC_URI = " \
     file://0005-test-cheri-fix-alloc-config.patch \
     file://0006-threadalloc-redef-atext-impl.patch \
     file://0007-tests-cheri.cc-remove-outdated-flags.patch \
+    file://0008-cheri-test-add-debug-messages.patch \
     file://run-tests.sh \
     "
 SRCREV = "cd2b19b9f1c8db1df7d97a97ed6660cc16abd6de"
@@ -73,20 +77,43 @@ EXTRA_OECMAKE += " \
     "
 
 do_install:append () {
-    TEST_BIN_PATH=${bindir}/snmalloc/
+    TEST_BIN_PATH=${bindir}/${PN}
+    SRC_PATH=${datadir}/src/${PN}
+    LIB_PATH=${libdir}
     
     install -d  ${D}${TEST_BIN_PATH}
-    cp ${B}/perf-* ${B}/func-* ${D}${TEST_BIN_PATH}
+    cp ${B}/perf-* ${D}${TEST_BIN_PATH}
+    cp ${B}/func-* ${D}${TEST_BIN_PATH}
 
     install -m 744 ${WORKDIR}/run-tests.sh ${D}${bindir}
     sed -i "s|@TEST_BIN_PATH@|${TEST_BIN_PATH}|g" ${D}${bindir}/run-tests.sh
+
+    # install -d ${D}/${SRC_PATH}
+    # cp -a ${S}/. ${D}${SRC_PATH}
+
+    install -d ${D}/${LIBPATH}
+    cp -r ${B}/*.so  ${D}${LIB_PATH}
+    cp -r ${B}/*.a  ${D}${LIB_PATH}
+
+    bbwarn "PN ${PN}"
+    bbwarn "datadir ${datadir}"
+    bbwarn "-src FILES ${datadir}/src/${PN}"
+    bbwarn "ls ${datadir}/src/${PN} $(ls ${D}${datadir}/src/${PN} | head -n5)"
 }
 
+FILES:${PN} = "\
+    ${includedir}/snmalloc \
+    "
+
+# FILES:${PN}-src = "\
+#     /usr/lib/aarch64-linux-musl_purecap/usr/share/src/snmalloc/** \
+#     "
+
+# CMake files
 FILES:${PN}-dev = "\
-    ${includedir}/snmalloc/ \
-    ${libdir}/libsnmallocshim-static.a \
-    ${libdir}/libsnmallocshim-new-override.a \
     ${datadir}/snmalloc \
+    ${libdir}/libsnmallocshim-static.a \
+    ${libdir}/libsnmalloc-new-override.a \
     "
 
 FILES:${PN}-shim = "\
@@ -97,7 +124,8 @@ FILES:${PN}-minimal = "\
     ${libdir}/libsnmalloc-minimal.so \
     "
 
-FILES:${PN}-test = " \
+FILES:${PN}-test = "\
+    ${bindir}/run-tests.sh \
     ${bindir}/snmalloc/func-* \
     ${bindir}/snmalloc/perf-* \
     ${libdir}/libsnmallocshim-checks-memcpy-only.so \

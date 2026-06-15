@@ -77,7 +77,7 @@ IMAGE_INSTALL:append =  " \
                         "
 
 IMAGE_INSTALL:append = " \
-                        snmalloc \
+                        snmalloc-test \
                         llvm-morello \
                         cmake \
                         ninja \

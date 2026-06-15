@@ -1,0 +1,44 @@
+cmake -G Ninja /usr/lib/aarch64-linux-musl_purecap/usr/src/snmalloc/ \
+-DCMAKE_MAKE_PROGRAM=/usr/bin/ninja \
+-DCMAKE_INSTALL_PREFIX:PATH=/usr/lib/aarch64-linux-musl_purecap/usr \
+ -DCMAKE_INSTALL_BINDIR:PATH=bin \
+ -DCMAKE_INSTALL_SBINDIR:PATH=sbin \
+ -DCMAKE_INSTALL_LIBEXECDIR:PATH=libexec \
+ -DCMAKE_INSTALL_SYSCONFDIR:PATH=/usr/lib/aarch64-linux-musl_purecap/etc \
+ -DCMAKE_INSTALL_SHAREDSTATEDIR:PATH=../com \
+ -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=/usr/lib/aarch64-linux-musl_purecap/var \
+ -DCMAKE_INSTALL_LIBDIR:PATH=lib \
+ -DCMAKE_INSTALL_INCLUDEDIR:PATH=include \
+ -DCMAKE_INSTALL_DATAROOTDIR:PATH=share \
+ -DPYTHON_EXECUTABLE:PATH=/usr/bin/python3 \
+ -DPython_EXECUTABLE:PATH=/usr/bin/python3 \
+ -DPython3_EXECUTABLE:PATH=/usr/bin/python3 \
+ -DCMAKE_INSTALL_SO_NO_EXE=0 \
+ -DCMAKE_TOOLCHAIN_FILE:FILEPATH=${HOME}/toolchain.cmake \
+ -DCMAKE_NO_SYSTEM_FROM_IMPORTED=1 \
+ -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON \
+ -DFETCHCONTENT_FULLY_DISCONNECTED=ON \
+ -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=ON \
+ -DCMAKE_BUILD_TYPE=Release \
+ -DSNMALLOC_BUILD_TESTING=1 \
+ -DCMAKE_LINKER='/usr/bin/ld.lld' \
+ 
+ -DCMAKE_INSTALL_RPATH='$ORIGIN/../lib:/usr/lib/aarch64-linux-musl_purecap/usr/lib' \
+ -DCMAKE_SYSROOT='/usr/lib/aarch64-linux-musl_purecap' \
+
+ -DCMAKE_EXE_LINKER_FLAGS=" \
+ -L/usr/lib/aarch64-linux-musl_purecap/usr/lib \
+ -rtlib=compiler-rt \
+ -Wl,-rpath=/usr/lib/aarch64-linux-musl_purecap/usr/lib \
+ -B/usr/lib/aarch64-linux-musl_purecap/usr/lib \
+ -lc++abi \
+ -lunwind \
+ -lc" \
+ -DCMAKE_SHARED_LINKER_FLAGS=" \
+ -L/usr/lib/aarch64-linux-musl_purecap/usr/lib \
+ -rtlib=compiler-rt \
+ -Wl,-rpath=/usr/lib/aarch64-linux-musl_purecap/usr/lib \
+ -B/usr/lib/aarch64-linux-musl_purecap/usr/lib \
+ -lc++abi \
+ -lunwind \
+ -lc"
