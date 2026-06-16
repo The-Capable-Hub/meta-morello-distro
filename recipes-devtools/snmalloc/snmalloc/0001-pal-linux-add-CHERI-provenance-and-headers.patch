@@ -1,0 +1,65 @@
+From 2b6485a117ab25932ce4bbb1454223c95330f9fd Mon Sep 17 00:00:00 2001
+From: Harrison Carter <harrison.carter@thecapablehub.org>
+Date: Tue, 19 May 2026 08:45:28 +0100
+Subject: [PATCH 1/1] pal: linux: add CHERI provenance and headers
+
+Signed-off-by: Harrison Carter <harrison.carter@thecapablehub.org>
+---
+ src/snmalloc/pal/pal_linux.h | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+diff --git a/src/snmalloc/pal/pal_linux.h b/src/snmalloc/pal/pal_linux.h
+index 251aaf3..df14e82 100644
+--- a/src/snmalloc/pal/pal_linux.h
++++ b/src/snmalloc/pal/pal_linux.h
+@@ -19,6 +19,13 @@
+ #    include <linux/futex.h>
+ #  endif
+ 
++#  if defined(__CHERI_PURE_CAPABILITY__) //&& defined(__MORELLO__)
++#    include <sys/cheri.h>
++#    if !defined(CHERI_PERM_SW_VMEM)
++#      define CHERI_PERM_SW_VMEM CHERI_PERM_CHERIABI_VMMAP
++#    endif
++#  endif
++
+ #  include <stdio.h>
+ 
+ namespace snmalloc
+@@ -161,6 +168,33 @@ namespace snmalloc
+       madvise(p, size, MADV_DONTDUMP);
+     }
+ 
++#  if defined(__CHERI_PURE_CAPABILITY__)
++    static_assert(
++      aal_supports<StrictProvenance>,
++      "CHERI purecap support requires StrictProvenance AAL");
++
++    /**
++     * On CheriBSD, exporting a pointer means stripping it of the authority to
++     * manage the address space it references by clearing the SW_VMEM
++     * permission bit (Which sounds appropriate on Linux, too).
++     */
++    template<typename T, SNMALLOC_CONCEPT(capptr::IsBound) B>
++    static SNMALLOC_FAST_PATH CapPtr<T, capptr::user_address_control_type<B>>
++    capptr_to_user_address_control(CapPtr<T, B> p)
++    {
++      if constexpr (Aal::aal_cheri_features & Aal::AndPermsTrapsUntagged)
++      {
++        if (p == nullptr)
++        {
++          return nullptr;
++        }
++      }
++      return CapPtr<T, capptr::user_address_control_type<B>>::unsafe_from(
++        __builtin_cheri_perms_and(
++          p.unsafe_ptr(), ~static_cast<unsigned int>(CHERI_PERM_SW_VMEM)));
++    }
++#  endif
++
+     static uint64_t get_entropy64()
+     {
+       KeepErrno k;
+-- 
+2.43.0
+

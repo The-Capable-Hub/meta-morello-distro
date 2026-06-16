@@ -1,0 +1,25 @@
+From 5a8bf425a5a44ca321b014042604c06c7e0fbc20 Mon Sep 17 00:00:00 2001
+From: Harrison Carter <harrison.carter@thecapablehub.org>
+Date: Wed, 20 May 2026 10:22:50 +0100
+Subject: [PATCH 6/6] threadalloc: redef atext impl
+
+Signed-off-by: Harrison Carter <harrison.carter@thecapablehub.org>
+---
+ src/snmalloc/global/threadalloc.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/snmalloc/global/threadalloc.h b/src/snmalloc/global/threadalloc.h
+index d037995..37dfd61 100644
+--- a/src/snmalloc/global/threadalloc.h
++++ b/src/snmalloc/global/threadalloc.h
+@@ -26,6 +26,7 @@
+ #    error At most one out of method of thread teardown can be specified.
+ #  endif
+ #  define SNMALLOC_THREAD_TEARDOWN_DEFINED
++#  define __cxa_thread_atexit_impl __cxa_thread_atexit
+ extern "C" int __cxa_thread_atexit_impl(void(func)(void*), void*, void*);
+ extern "C" void* __dso_handle;
+ #endif
+-- 
+2.43.0
+

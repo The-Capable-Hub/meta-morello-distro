@@ -1,0 +1,40 @@
+From 10c1f0d38165c582a7b9eab4267b8d0ce0b200e4 Mon Sep 17 00:00:00 2001
+From: Harrison Carter <harrison.carter@thecapablehub.org>
+Date: Tue, 19 May 2026 16:06:02 +0100
+Subject: [PATCH 5/5] test: cheri: fix alloc config
+
+Signed-off-by: Harrison Carter <harrison.carter@thecapablehub.org>
+---
+ src/test/func/cheri/cheri.cc | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/test/func/cheri/cheri.cc b/src/test/func/cheri/cheri.cc
+index 7909750..b56aa6b 100644
+--- a/src/test/func/cheri/cheri.cc
++++ b/src/test/func/cheri/cheri.cc
+@@ -12,7 +12,7 @@ int main()
+ 
+ #  if defined(__FreeBSD__)
+ #  include <cheri/cherireg.h>
+-# else
++#  else
+ #  include <cheriintrin.h>
+ #  endif
+ 
+@@ -135,10 +135,10 @@ int main()
+    */
+   message("Grab Alloc from pool for inspection");
+   {
+-    static_assert(
+-      std::is_same_v<decltype(alloc.alloc), Allocator<StandardConfig>>);
++    static_assert(std::is_same_v<decltype(*alloc.alloc),
++                                 Allocator<snmalloc::Config>&>);
+ 
+-    auto* ca = AllocPool<StandardConfig>::acquire();
++    auto* ca = AllocPool<snmalloc::Config>::acquire();
+ 
+     SNMALLOC_CHECK(cap_len_is(ca, sizeof(*ca)));
+     SNMALLOC_CHECK(cap_vmem_perm_is(ca, false));
+-- 
+2.43.0
+

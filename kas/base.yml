@@ -13,7 +13,8 @@ repos:
 
   meta-morello:
     url: "https://github.com/The-Capable-Hub/meta-morello"
-    commit: "c3a70955600e11c55c4e5a180e1e0765677faada"
+    commit: "80043c93ddbf660f51d204e238f6e0ad6dd8fb6d"
+    branch: hcarter/3-add-libcxx-to-meta-morello
     layers:
       meta-morello:
       meta-morello-toolchain:

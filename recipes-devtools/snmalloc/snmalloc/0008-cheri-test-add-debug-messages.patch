@@ -1,0 +1,58 @@
+From 9ded30bc9098dcca10581c09cf155a7ea614954f Mon Sep 17 00:00:00 2001
+From: Harrison Carter <harrison.carter@thecapablehub.org>
+Date: Mon, 15 Jun 2026 10:20:58 +0100
+Subject: [PATCH 8/8] cheri test: add debug messages
+
+Signed-off-by: Harrison Carter <harrison.carter@thecapablehub.org>
+---
+ src/test/func/cheri/cheri.cc | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/src/test/func/cheri/cheri.cc b/src/test/func/cheri/cheri.cc
+index b56aa6b..3b4746f 100644
+--- a/src/test/func/cheri/cheri.cc
++++ b/src/test/func/cheri/cheri.cc
+@@ -203,11 +203,22 @@ int main()
+         {
+           bzero(ocaps, sizeof(ocaps));
+ 
++          snmalloc::message("ptrs: {}", ptrs);
++          snmalloc::message("pre: {}", pre);
++          snmalloc::message("ocaps: {}", ocaps);
++          snmalloc::message("icaps: {}", icaps);
++          snmalloc::message("post: {}", post);
++
+           snmalloc::memcpy<false>(
+             pointer_offset(ocaps, pre),
+             pointer_offset(icaps, pre),
+             (ptrs + 1) * sizeof(int*) - pre + post);
+ 
++          snmalloc::message("memcmp result: {}", memcmp(
++              pointer_offset(icaps, pre),
++              pointer_offset(ocaps, pre),
++              sizeof(int*) - pre));
++
+           /* prefix */
+           SNMALLOC_CHECK(
+             memcmp(
+@@ -263,7 +274,7 @@ int main()
+     }
+   }
+ 
+-  message("Verify sizeclass representability");
++  snmalloc::message("Verify sizeclass representability");
+   {
+     for (size_t sc = 0; sc < NUM_SMALL_SIZECLASSES; sc++)
+     {
+@@ -278,7 +289,7 @@ int main()
+     }
+   }
+ 
+-  message("CHERI checks OK");
++  snmalloc::message("CHERI checks OK");
+   return 0;
+ }
+ 
+-- 
+2.43.0
+

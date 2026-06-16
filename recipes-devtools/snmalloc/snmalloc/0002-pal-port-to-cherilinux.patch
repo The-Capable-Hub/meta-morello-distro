@@ -1,0 +1,38 @@
+From 98a81423c3bcbd193b2c7d9fed596c892bafaf9b Mon Sep 17 00:00:00 2001
+From: Harrison Carter <harrison.carter@thecapablehub.org>
+Date: Tue, 19 May 2026 15:12:42 +0100
+Subject: [PATCH 2/2] pal: port to cherilinux
+
+Signed-off-by: Harrison Carter <harrison.carter@thecapablehub.org>
+---
+ src/snmalloc/pal/pal_linux.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/src/snmalloc/pal/pal_linux.h b/src/snmalloc/pal/pal_linux.h
+index df14e82..500e53c 100644
+--- a/src/snmalloc/pal/pal_linux.h
++++ b/src/snmalloc/pal/pal_linux.h
+@@ -213,7 +213,7 @@ namespace snmalloc
+         char buffer[sizeof(uint64_t)];
+       };
+ 
+-      ssize_t ret;
++      intptr_t ret;
+ 
+       // give a try to SYS_getrandom
+ #  ifdef SYS_getrandom
+@@ -237,7 +237,10 @@ namespace snmalloc
+           // 2. `GRND_NONBLOCK` bit is set. Since we are reading from
+           // `urandom`, this means if the entropy pool is
+           // not initialised, we will get a EAGAIN.
+-          ret = syscall(SYS_getrandom, current, length, GRND_NONBLOCK);
++          ret = syscall(SYS_getrandom,
++                        current,
++                        length,
++                        GRND_NONBLOCK);
+           // check whether are interrupt by a signal
+           if (SNMALLOC_UNLIKELY(ret < 0))
+           {
+-- 
+2.43.0
+
